@@ -2,14 +2,9 @@
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace ColorTextBlock.Avalonia.Geometries
-{
-    internal class TextLineGeometry : TextGeometry
-    {
+namespace ColorTextBlock.Avalonia.Geometries {
+    internal class TextLineGeometry : TextGeometry {
         public SimpleTextSource Text { get; private set; }
         public TextLine Line { get; private set; }
         public IBrush? LayoutForeground { get; private set; }
@@ -19,20 +14,17 @@ namespace ColorTextBlock.Avalonia.Geometries
             SimpleTextSource text,
             TextLine tline,
             bool linebreak) :
-            base(owner, tline.WidthIncludingTrailingWhitespace, tline.Height, tline.Baseline, owner.TextVerticalAlignment, linebreak)
-        {
+            base(owner, tline.WidthIncludingTrailingWhitespace, tline.Height, tline.Baseline, owner.TextVerticalAlignment, linebreak) {
             Text = text;
             Line = tline;
             LayoutForeground = owner.Foreground;
         }
 
-        public override void Render(DrawingContext ctx)
-        {
+        public override void Render(DrawingContext ctx) {
             var foreground = TemporaryForeground ?? Foreground;
             var background = TemporaryBackground ?? Background;
 
-            if (LayoutForeground != foreground)
-            {
+            if (LayoutForeground != foreground) {
                 LayoutForeground = foreground;
                 Text = Text.ChangeForeground(foreground);
 
@@ -46,23 +38,20 @@ namespace ColorTextBlock.Avalonia.Geometries
                             parPrps)!;
             }
 
-            if (background != null)
-            {
+            if (background != null) {
                 ctx.FillRectangle(background, new Rect(Left, Top, Width, Height));
             }
 
             Line.Draw(ctx, new Point(Left, Top));
 
-            if (IsUnderline)
-            {
+            if (IsUnderline) {
                 var ypos = Math.Round(Top + Height);
                 ctx.DrawLine(new Pen(foreground, 2),
                     new Point(Left, ypos),
                     new Point(Left + Width, ypos));
             }
 
-            if (IsStrikethrough)
-            {
+            if (IsStrikethrough) {
                 var ypos = Math.Round(Top + Height / 2);
                 ctx.DrawLine(new Pen(foreground, 2),
                     new Point(Left, ypos),
@@ -70,8 +59,7 @@ namespace ColorTextBlock.Avalonia.Geometries
             }
         }
 
-        public override TextPointer CalcuatePointerFrom(double x, double y)
-        {
+        public override TextPointer CalcuatePointerFrom(double x, double y) {
             var relX = x - Left;
 
             if (relX < 0) return GetBegin();
@@ -82,23 +70,20 @@ namespace ColorTextBlock.Avalonia.Geometries
 
             return new TextPointer((CRun)Owner, this, hit, dst, false);
         }
-        public override TextPointer CalcuatePointerFrom(int index)
-        {
+        public override TextPointer CalcuatePointerFrom(int index) {
             var hit = new CharacterHit(Line.FirstTextSourceIndex + index);
             var dst = Line.GetDistanceFromCharacterHit(hit);
 
             return new TextPointer((CRun)Owner, this, hit, dst, false);
         }
 
-        public override TextPointer GetBegin()
-        {
+        public override TextPointer GetBegin() {
             var hit = Line.GetCharacterHitFromDistance(0);
 
             return new TextPointer((CRun)Owner, this, hit, false);
         }
 
-        public override TextPointer GetEnd()
-        {
+        public override TextPointer GetEnd() {
             var hit = Line.GetCharacterHitFromDistance(Double.MaxValue);
 
             return new TextPointer((CRun)Owner, this, hit, Width, true);

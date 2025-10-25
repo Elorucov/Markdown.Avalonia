@@ -9,13 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ColorTextBlock.Avalonia
-{
+namespace ColorTextBlock.Avalonia {
     /// <summary>
     /// Text decoration
     /// </summary>
-    public class CSpan : CInline
-    {
+    public class CSpan : CInline {
         /// <summary>
         /// The thickness of the border
         /// </summary>
@@ -65,18 +63,14 @@ namespace ColorTextBlock.Avalonia
         public static readonly StyledProperty<IEnumerable<CInline>> ContentProperty =
             AvaloniaProperty.Register<CSpan, IEnumerable<CInline>>(nameof(Content));
 
-        static CSpan()
-        {
+        static CSpan() {
             ContentProperty.Changed.AddClassHandler<CSpan>(
-                (x, e) =>
-                {
-                    if (e.OldValue is IEnumerable<CInline> oldlines)
-                    {
+                (x, e) => {
+                    if (e.OldValue is IEnumerable<CInline> oldlines) {
                         foreach (var child in oldlines)
                             x.LogicalChildren.Remove(child);
                     }
-                    if (e.NewValue is IEnumerable<CInline> newlines)
-                    {
+                    if (e.NewValue is IEnumerable<CInline> newlines) {
                         foreach (var child in newlines)
                             x.LogicalChildren.Add(child);
                     }
@@ -88,8 +82,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The thickness of the border
         /// </summary>
-        public Thickness BorderThickness
-        {
+        public Thickness BorderThickness {
             get => GetValue(BorderThicknessProperty);
             set => SetValue(BorderThicknessProperty, value);
         }
@@ -97,8 +90,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The brush of the border.
         /// </summary>
-        public IBrush BorderBrush
-        {
+        public IBrush BorderBrush {
             get => GetValue(BorderBrushProperty);
             set => SetValue(BorderBrushProperty, value);
         }
@@ -106,8 +98,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The radius of the border rounded corners
         /// </summary>
-        public CornerRadius CornerRadius
-        {
+        public CornerRadius CornerRadius {
             get => GetValue(CornerRadiusProperty);
             set => SetValue(CornerRadiusProperty, value);
         }
@@ -115,8 +106,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The box shadow effect parameters
         /// </summary>
-        public BoxShadows BoxShadow
-        {
+        public BoxShadows BoxShadow {
             get => GetValue(BoxShadowProperty);
             set => SetValue(BoxShadowProperty, value);
         }
@@ -124,8 +114,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The padding to place around the Child control.
         /// </summary>
-        public Thickness Padding
-        {
+        public Thickness Padding {
             get => GetValue(PaddingProperty);
             set => SetValue(PaddingProperty, value);
         }
@@ -133,8 +122,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The margin around the element.
         /// </summary>
-        public Thickness Margin
-        {
+        public Thickness Margin {
             get => GetValue(MarginProperty);
             set => SetValue(MarginProperty, value);
         }
@@ -143,18 +131,15 @@ namespace ColorTextBlock.Avalonia
         /// THe content of the eleemnt
         /// </summary>
         [Content]
-        public IEnumerable<CInline> Content
-        {
+        public IEnumerable<CInline> Content {
             get { return GetValue(ContentProperty); }
             set { SetValue(ContentProperty, value); }
         }
 
-        public CSpan()
-        {
+        public CSpan() {
             var clst = new AvaloniaList<CInline>();
             // for xaml loader
-            clst.CollectionChanged += (s, e) =>
-            {
+            clst.CollectionChanged += (s, e) => {
                 if (e.OldItems != null)
                     foreach (var child in e.OldItems)
                         LogicalChildren.Remove((CInline)child);
@@ -167,17 +152,14 @@ namespace ColorTextBlock.Avalonia
             Content = clst;
         }
 
-        public CSpan(IEnumerable<CInline> inlines)
-        {
+        public CSpan(IEnumerable<CInline> inlines) {
             Content = inlines.ToArray();
         }
 
-        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-        {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
 
-            switch (change.Property.Name)
-            {
+            switch (change.Property.Name) {
                 case nameof(BorderThickness):
                 case nameof(CornerRadius):
                 case nameof(BoxShadow):
@@ -192,8 +174,7 @@ namespace ColorTextBlock.Avalonia
             }
         }
 
-        private void OnBorderPropertyChanged(bool requestMeasure)
-        {
+        private void OnBorderPropertyChanged(bool requestMeasure) {
             bool borderEnabled =
                 BorderThickness != default ||
                 Padding != default ||
@@ -201,10 +182,8 @@ namespace ColorTextBlock.Avalonia
                 Margin != default ||
                 !BoxShadow.Equals(default);
 
-            if (borderEnabled)
-            {
-                if (_border is null)
-                {
+            if (borderEnabled) {
+                if (_border is null) {
                     _border = new Border();
                     LogicalChildren.Add(_border);
                 }
@@ -215,9 +194,7 @@ namespace ColorTextBlock.Avalonia
                 _border.BoxShadow = BoxShadow;
                 _border.Padding = Padding;
                 _border.Margin = Margin;
-            }
-            else
-            {
+            } else {
                 if (_border is not null)
                     LogicalChildren.Remove(_border);
                 _border = null;
@@ -229,19 +206,15 @@ namespace ColorTextBlock.Avalonia
 
         protected override IEnumerable<CGeometry> MeasureOverride(
             double entireWidth,
-            double remainWidth)
-        {
-            if (_border is not null)
-            {
+            double remainWidth) {
+            if (_border is not null) {
                 _border.Measure(Size.Infinity);
 
                 entireWidth -= _border.DesiredSize.Width;
                 remainWidth -= _border.DesiredSize.Width;
 
                 return PrivateMeasure(_border, entireWidth, remainWidth);
-            }
-            else
-            {
+            } else {
                 return PrivateMeasure(entireWidth, remainWidth);
             }
         }
@@ -249,41 +222,33 @@ namespace ColorTextBlock.Avalonia
         private IEnumerable<CGeometry> PrivateMeasure(
             Border border,
             double entireWidth,
-            double remainWidth)
-        {
+            double remainWidth) {
             var buffer = new List<CGeometry>();
-            foreach (var adding in PrivateMeasure(entireWidth, remainWidth))
-            {
+            foreach (var adding in PrivateMeasure(entireWidth, remainWidth)) {
                 // save linebreak before span
-                if (adding is LineBreakMarkGeometry && buffer.Count == 0)
-                {
+                if (adding is LineBreakMarkGeometry && buffer.Count == 0) {
                     yield return adding;
                     continue;
                 }
 
                 buffer.Add(adding);
 
-                if (adding.LineBreak)
-                {
+                if (adding.LineBreak) {
                     yield return DecoratorGeometry.New(this, buffer, border);
                     buffer.Clear();
                 }
             }
-            if (buffer.Count != 0)
-            {
+            if (buffer.Count != 0) {
                 yield return DecoratorGeometry.New(this, buffer, border);
             }
         }
 
         private IEnumerable<CGeometry> PrivateMeasure(
             double entireWidth,
-            double remainWidth)
-        {
-            foreach (CInline inline in Content)
-            {
+            double remainWidth) {
+            foreach (CInline inline in Content) {
                 IEnumerable<CGeometry> addings = inline.Measure(entireWidth, remainWidth);
-                foreach (var add in addings)
-                {
+                foreach (var add in addings) {
                     yield return add;
 
                     if (add.LineBreak) remainWidth = entireWidth;

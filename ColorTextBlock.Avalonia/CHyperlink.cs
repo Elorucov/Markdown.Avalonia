@@ -6,13 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ColorTextBlock.Avalonia
-{
+namespace ColorTextBlock.Avalonia {
     /// <summary>
     /// Hyperlink decoration
     /// </summary>
-    public class CHyperlink : CSpan
-    {
+    public class CHyperlink : CSpan {
         /// <summary>
         /// Background brush during mouse hover
         /// </summary>
@@ -30,8 +28,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// Background brush during mouse hover
         /// </summary>
-        public IBrush? HoverBackground
-        {
+        public IBrush? HoverBackground {
             get { return GetValue(HoverBackgroundProperty); }
             set { SetValue(HoverBackgroundProperty, value); }
         }
@@ -39,8 +36,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// Foreground brush during mouse hover
         /// </summary>
-        public IBrush? HoverForeground
-        {
+        public IBrush? HoverForeground {
             get { return GetValue(HoverForegroundProperty); }
             set { SetValue(HoverForegroundProperty, value); }
         }
@@ -56,43 +52,35 @@ namespace ColorTextBlock.Avalonia
 
         public CHyperlink() { }
 
-        public CHyperlink(IEnumerable<CInline> inlines) : base(inlines)
-        {
+        public CHyperlink(IEnumerable<CInline> inlines) : base(inlines) {
         }
 
 
         protected override IEnumerable<CGeometry> MeasureOverride(
             double entireWidth,
-            double remainWidth)
-        {
+            double remainWidth) {
             var metrics = base.MeasureOverride(
                 entireWidth,
                 remainWidth);
 
-            foreach (CGeometry metry in metrics)
-            {
+            foreach (CGeometry metry in metrics) {
                 metry.OnClick = ctrl => Command?.Invoke(CommandParameter ?? string.Empty);
 
-                metry.OnMousePressed = ctrl =>
-                {
+                metry.OnMousePressed = ctrl => {
                     PseudoClasses.Add(":pressed");
                 };
 
-                metry.OnMouseReleased = ctrl =>
-                {
+                metry.OnMouseReleased = ctrl => {
                     PseudoClasses.Remove(":pressed");
                 };
 
-                metry.OnMouseEnter = ctrl =>
-                {
+                metry.OnMouseEnter = ctrl => {
                     PseudoClasses.Add(":pointerover");
                     PseudoClasses.Add(":hover");
 
-                    try
-                    {
+                    try {
                         ctrl.Cursor = new Cursor(StandardCursorType.Hand);
-                    }
-                    catch { /*I cannot assume Cursor.ctor doesn't throw an exception.*/ }
+                    } catch { /*I cannot assume Cursor.ctor doesn't throw an exception.*/ }
 
                     IEnumerable<TextGeometry> tmetries =
                         (metry is DecoratorGeometry d) ?
@@ -101,10 +89,8 @@ namespace ColorTextBlock.Avalonia
                             new[] { t } :
                             new TextGeometry[0];
 
-                    if (tmetries != null)
-                    {
-                        foreach (var tmetry in tmetries)
-                        {
+                    if (tmetries != null) {
+                        foreach (var tmetry in tmetries) {
                             tmetry.TemporaryForeground = HoverForeground;
                             tmetry.TemporaryBackground = HoverBackground;
                         }
@@ -112,8 +98,7 @@ namespace ColorTextBlock.Avalonia
                     }
                 };
 
-                metry.OnMouseLeave = ctrl =>
-                {
+                metry.OnMouseLeave = ctrl => {
                     PseudoClasses.Remove(":pointerover");
                     PseudoClasses.Remove(":hover");
 
@@ -126,10 +111,8 @@ namespace ColorTextBlock.Avalonia
                             new[] { t } :
                             new TextGeometry[0];
 
-                    if (tmetries != null)
-                    {
-                        foreach (var tmetry in tmetries)
-                        {
+                    if (tmetries != null) {
+                        foreach (var tmetry in tmetries) {
                             tmetry.TemporaryForeground = null;
                             tmetry.TemporaryBackground = null;
                         }

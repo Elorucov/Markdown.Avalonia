@@ -1,12 +1,10 @@
 ﻿
-namespace ColorTextBlock.Avalonia
-{
+namespace ColorTextBlock.Avalonia {
     /// <summary>
     /// The vertical position of text within line
     /// </summary>
     /// <seealso cref="https://github.com/whistyun/Markdown.Avalonia/issues/28"/>
-    public enum TextVerticalAlignment
-    {
+    public enum TextVerticalAlignment {
         /// <summary>
         /// Text elements are placed at the top of the line.
         /// </summary>

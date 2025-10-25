@@ -1,15 +1,9 @@
 ﻿using Avalonia.Media;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace ColorTextBlock.Avalonia.Fonts
-{
-    internal class FontFamilyCollector
-    {
-        public static FontFamily? TryGetMonospace()
-        {
+namespace ColorTextBlock.Avalonia.Fonts {
+    internal class FontFamilyCollector {
+        public static FontFamily? TryGetMonospace() {
             string[] RequestFamilies = {
                 "menlo",
                 "monaco",

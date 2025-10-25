@@ -6,15 +6,13 @@ using ColorTextBlock.Avalonia.Geometries;
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace ColorTextBlock.Avalonia
-{
+namespace ColorTextBlock.Avalonia {
     /// <summary>
     /// The base class for representing a text element.
     /// </summary>
     // テキスト要素を表現するための基底のクラス
     [TypeConverter(typeof(StringToRunConverter))]
-    public abstract class CInline : StyledElement
-    {
+    public abstract class CInline : StyledElement {
         /// <summary>
         /// The brush of background.
         /// </summary>
@@ -92,8 +90,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The brush of background.
         /// </summary>
-        public IBrush? Background
-        {
+        public IBrush? Background {
             get { return GetValue(BackgroundProperty); }
             set { SetValue(BackgroundProperty, value); }
         }
@@ -101,8 +98,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The brush of the text element.
         /// </summary>
-        public IBrush? Foreground
-        {
+        public IBrush? Foreground {
             get { return GetValue(ForegroundProperty); }
             set { SetValue(ForegroundProperty, value); }
         }
@@ -110,8 +106,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The font family of the text element
         /// </summary>
-        public FontFamily FontFamily
-        {
+        public FontFamily FontFamily {
             get { return GetValue(FontFamilyProperty); }
             set { SetValue(FontFamilyProperty, value); }
         }
@@ -119,8 +114,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The font size of the text element
         /// </summary>
-        public double FontSize
-        {
+        public double FontSize {
             get { return GetValue(FontSizeProperty); }
             set { SetValue(FontSizeProperty, value); }
         }
@@ -128,8 +122,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The font stretch of the text element
         /// </summary>
-        public FontStyle FontStyle
-        {
+        public FontStyle FontStyle {
             get { return GetValue(FontStyleProperty); }
             set { SetValue(FontStyleProperty, value); }
         }
@@ -137,8 +130,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The font weight of the text element
         /// </summary>
-        public FontWeight FontWeight
-        {
+        public FontWeight FontWeight {
             get { return GetValue(FontWeightProperty); }
             set { SetValue(FontWeightProperty, value); }
         }
@@ -146,8 +138,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// The font stretch of the text element
         /// </summary>
-        public FontStretch FontStretch
-        {
+        public FontStretch FontStretch {
             get { return GetValue(FontStretchProperty); }
             set { SetValue(FontStretchProperty, value); }
         }
@@ -155,8 +146,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// Typeface of the text element
         /// </summary>
-        public Typeface Typeface
-        {
+        public Typeface Typeface {
             get;
             private set;
         }
@@ -165,8 +155,7 @@ namespace ColorTextBlock.Avalonia
         /// Indicates whether the text element is underlined.
         /// If this property value is true, the text element is underlined.
         /// </summary>
-        public bool IsUnderline
-        {
+        public bool IsUnderline {
             get { return GetValue(IsUnderlineProperty); }
             set { SetValue(IsUnderlineProperty, value); }
         }
@@ -175,8 +164,7 @@ namespace ColorTextBlock.Avalonia
         /// Indicates whether the text element is strikethrough.
         /// If the value of this property is true, the text element is strikethrough.
         /// </summary>
-        public bool IsStrikethrough
-        {
+        public bool IsStrikethrough {
             get { return GetValue(IsStrikethroughProperty); }
             set { SetValue(IsStrikethroughProperty, value); }
         }
@@ -185,18 +173,15 @@ namespace ColorTextBlock.Avalonia
         /// Use to indicate the vertical position of text within line.
         /// For example, it is used to align text to the top or to the bottom.
         /// </summary>
-        public TextVerticalAlignment TextVerticalAlignment
-        {
+        public TextVerticalAlignment TextVerticalAlignment {
             get { return GetValue(TextVerticalAlignmentProperty); }
             set { SetValue(TextVerticalAlignmentProperty, value); }
         }
 
-        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-        {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
 
-            switch (change.Property.Name)
-            {
+            switch (change.Property.Name) {
                 case nameof(Background):
                 case nameof(Foreground):
                 case nameof(IsUnderline):
@@ -218,43 +203,29 @@ namespace ColorTextBlock.Avalonia
             }
         }
 
-        protected void RequestMeasure()
-        {
-            if (Parent is CInline cline)
-            {
+        protected void RequestMeasure() {
+            if (Parent is CInline cline) {
                 cline.RequestMeasure();
-            }
-            else if (Parent is CTextBlock ctxt)
-            {
+            } else if (Parent is CTextBlock ctxt) {
                 ctxt.OnMeasureSourceChanged();
-            }
-            else if (Parent is Layoutable layout)
-            {
+            } else if (Parent is Layoutable layout) {
                 layout.InvalidateMeasure();
             }
         }
 
-        protected void RequestRender()
-        {
-            try
-            {
-                if (Parent is CInline cline)
-                {
+        protected void RequestRender() {
+            try {
+                if (Parent is CInline cline) {
                     cline.RequestRender();
-                }
-                else if (Parent is Layoutable layout)
-                {
+                } else if (Parent is Layoutable layout) {
                     layout.InvalidateVisual();
                 }
-            }
-            catch
-            {
+            } catch {
                 // An error occured sometimes with FluentAvalonia.
             }
         }
 
-        internal IEnumerable<CGeometry> Measure(double entireWidth, double remainWidth)
-        {
+        internal IEnumerable<CGeometry> Measure(double entireWidth, double remainWidth) {
             Typeface = new Typeface(FontFamily, FontStyle, FontWeight, FontStretch);
 
             /*

@@ -1,14 +1,11 @@
 ﻿using Avalonia.Automation.Peers;
 
-namespace ColorTextBlock.Avalonia
-{
+namespace ColorTextBlock.Avalonia {
     /// <summary>
     /// The automation peer for CTextBlock.
     /// </summary>
-    public class CTextBlockAutomationPeer : ControlAutomationPeer
-    {
-        public CTextBlockAutomationPeer(CTextBlock owner) : base(owner)
-        { }
+    public class CTextBlockAutomationPeer : ControlAutomationPeer {
+        public CTextBlockAutomationPeer(CTextBlock owner) : base(owner) { }
 
         public new CTextBlock Owner
             => (CTextBlock)base.Owner;

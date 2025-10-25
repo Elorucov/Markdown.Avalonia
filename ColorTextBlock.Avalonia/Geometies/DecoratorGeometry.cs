@@ -3,15 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace ColorTextBlock.Avalonia.Geometries
-{
-    public class DecoratorGeometry : CGeometry
-    {
+namespace ColorTextBlock.Avalonia.Geometries {
+    public class DecoratorGeometry : CGeometry {
         public CGeometry[] Targets { get; }
         public Border Decorate { get; }
 
@@ -21,50 +16,40 @@ namespace ColorTextBlock.Avalonia.Geometries
         private Action<Control>? _OnMouseReleased;
         private Action<Control>? _OnClick;
 
-        public override Action<Control>? OnMouseEnter
-        {
-            get => ctrl =>
-            {
+        public override Action<Control>? OnMouseEnter {
+            get => ctrl => {
                 _OnMouseEnter?.Invoke(ctrl);
                 foreach (var target in Targets)
                     target.OnMouseEnter?.Invoke(ctrl);
             };
             set => _OnMouseEnter = value;
         }
-        public override Action<Control>? OnMouseLeave
-        {
-            get => ctrl =>
-            {
+        public override Action<Control>? OnMouseLeave {
+            get => ctrl => {
                 _OnMouseLeave?.Invoke(ctrl);
                 foreach (var target in Targets)
                     target.OnMouseLeave?.Invoke(ctrl);
             };
             set => _OnMouseLeave = value;
         }
-        public override Action<Control>? OnMousePressed
-        {
-            get => ctrl =>
-            {
+        public override Action<Control>? OnMousePressed {
+            get => ctrl => {
                 _OnMousePressed?.Invoke(ctrl);
                 foreach (var target in Targets)
                     target.OnMousePressed?.Invoke(ctrl);
             };
             set => _OnMousePressed = value;
         }
-        public override Action<Control>? OnMouseReleased
-        {
-            get => ctrl =>
-            {
+        public override Action<Control>? OnMouseReleased {
+            get => ctrl => {
                 _OnMouseReleased?.Invoke(ctrl);
                 foreach (var target in Targets)
                     target.OnMouseReleased?.Invoke(ctrl);
             };
             set => _OnMouseReleased = value;
         }
-        public override Action<Control>? OnClick
-        {
-            get => ctrl =>
-            {
+        public override Action<Control>? OnClick {
+            get => ctrl => {
                 _OnClick?.Invoke(ctrl);
                 foreach (var target in Targets)
                     target.OnClick?.Invoke(ctrl);
@@ -75,8 +60,7 @@ namespace ColorTextBlock.Avalonia.Geometries
         internal static DecoratorGeometry New(
             CSpan owner,
             IEnumerable<CGeometry> oneline,
-            Border decorate)
-        {
+            Border decorate) {
             double width = 0;
             double height = 0;
 
@@ -88,12 +72,10 @@ namespace ColorTextBlock.Avalonia.Geometries
 
             void Max(ref double v1, double v2) => v1 = Math.Max(v1, v2);
 
-            foreach (var one in oneline)
-            {
+            foreach (var one in oneline) {
                 width += one.Width;
 
-                switch (one.TextVerticalAlignment)
-                {
+                switch (one.TextVerticalAlignment) {
                     case TextVerticalAlignment.Base:
                         Max(ref baseHeight, one.BaseHeight);
 
@@ -143,24 +125,20 @@ namespace ColorTextBlock.Avalonia.Geometries
                 owner,
                 w, h, lh,
                 owner.TextVerticalAlignment,
-                targets[targets.Length - 1].LineBreak)
-        {
+                targets[targets.Length - 1].LineBreak) {
             this.Targets = targets;
             this.Decorate = decorate;
         }
 
-        public override void Arranged()
-        {
+        public override void Arranged() {
             var left = Left + Decorate.BorderThickness.Left + Decorate.Padding.Left + Decorate.Margin.Left;
             var top = Top + Decorate.BorderThickness.Top + Decorate.Padding.Top + Decorate.Margin.Top;
             var btm = Top + Height - Decorate.BorderThickness.Bottom - Decorate.Padding.Bottom - Decorate.Margin.Bottom;
 
-            foreach (var target in Targets)
-            {
+            foreach (var target in Targets) {
                 target.Left = left;
 
-                target.Top = target.TextVerticalAlignment switch
-                {
+                target.Top = target.TextVerticalAlignment switch {
                     TextVerticalAlignment.Top
                         => top,
 
@@ -182,10 +160,8 @@ namespace ColorTextBlock.Avalonia.Geometries
             }
         }
 
-        public override void Render(DrawingContext ctx)
-        {
-            using (ctx.PushTransform(Matrix.CreateTranslation(Left + Decorate.Margin.Left, Top + Decorate.Margin.Top)))
-            {
+        public override void Render(DrawingContext ctx) {
+            using (ctx.PushTransform(Matrix.CreateTranslation(Left + Decorate.Margin.Left, Top + Decorate.Margin.Top))) {
                 Decorate.Background = Owner.Background;
                 Decorate.Arrange(new Rect(0, 0, Width, Height));
                 Decorate.Render(ctx);
@@ -196,23 +172,17 @@ namespace ColorTextBlock.Avalonia.Geometries
                 target.Render(ctx);
         }
 
-        public override TextPointer CalcuatePointerFrom(double x, double y)
-        {
-            if (x < Left)
-            {
+        public override TextPointer CalcuatePointerFrom(double x, double y) {
+            if (x < Left) {
                 return GetBegin();
             }
 
             int indexAdd = 0;
-            foreach (var target in Targets.Take(Targets.Length - 1))
-            {
-                if (x <= target.Left + target.Width)
-                {
+            foreach (var target in Targets.Take(Targets.Length - 1)) {
+                if (x <= target.Left + target.Width) {
                     return target.CalcuatePointerFrom(x, y)
                                  .Wrap(Owner, indexAdd);
-                }
-                else
-                {
+                } else {
                     indexAdd += target.CaretLength;
                 }
             }
@@ -220,16 +190,13 @@ namespace ColorTextBlock.Avalonia.Geometries
             return Targets[Targets.Length - 1].GetEnd().Wrap(Owner, indexAdd);
         }
 
-        public override TextPointer CalcuatePointerFrom(int index)
-        {
+        public override TextPointer CalcuatePointerFrom(int index) {
             if (index < 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             int relindex = index;
-            foreach (var target in Targets)
-            {
-                if (relindex < target.CaretLength)
-                {
+            foreach (var target in Targets) {
+                if (relindex < target.CaretLength) {
                     return target.CalcuatePointerFrom(relindex)
                                  .Wrap(Owner, index - relindex);
                 }
@@ -241,14 +208,12 @@ namespace ColorTextBlock.Avalonia.Geometries
         }
 
 
-        public override TextPointer GetBegin()
-        {
+        public override TextPointer GetBegin() {
             var pointer = Targets[0].GetBegin();
             return pointer.Wrap(Owner, 0);
         }
 
-        public override TextPointer GetEnd()
-        {
+        public override TextPointer GetEnd() {
             var pointer = Targets[Targets.Length - 1].GetEnd();
 
             int indexAdd = Targets.Take(Targets.Length - 1).Sum(t => t.CaretLength);

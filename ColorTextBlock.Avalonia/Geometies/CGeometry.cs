@@ -1,12 +1,9 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace ColorTextBlock.Avalonia.Geometries
-{
-    public abstract class CGeometry : ITextPointerHandleable
-    {
+namespace ColorTextBlock.Avalonia.Geometries {
+    public abstract class CGeometry : ITextPointerHandleable {
         public CInline Owner { get; }
         public double Left { get; set; }
         public double Top { get; set; }
@@ -16,13 +13,13 @@ namespace ColorTextBlock.Avalonia.Geometries
         public bool LineBreak { get; }
         public TextVerticalAlignment TextVerticalAlignment { get; }
 
-        public event Action? RepaintRequested;
+        public event Action RepaintRequested;
 
-        public virtual Action<Control>? OnMouseEnter { get; set; }
-        public virtual Action<Control>? OnMouseLeave { get; set; }
-        public virtual Action<Control>? OnMousePressed { get; set; }
-        public virtual Action<Control>? OnMouseReleased { get; set; }
-        public virtual Action<Control>? OnClick { get; set; }
+        public virtual Action<Control> OnMouseEnter { get; set; }
+        public virtual Action<Control> OnMouseLeave { get; set; }
+        public virtual Action<Control> OnMousePressed { get; set; }
+        public virtual Action<Control> OnMouseReleased { get; set; }
+        public virtual Action<Control> OnClick { get; set; }
 
         private int? _caretLength;
 
@@ -30,8 +27,7 @@ namespace ColorTextBlock.Avalonia.Geometries
             CInline owner,
             double width, double height, double baseHeight,
             TextVerticalAlignment textVerticalAlignment,
-            bool linebreak)
-        {
+            bool linebreak) {
             this.Owner = owner;
             this.Width = width;
             this.Height = height;
@@ -52,10 +48,8 @@ namespace ColorTextBlock.Avalonia.Geometries
         public virtual void Arranged() { }
 
 
-        public virtual int CaretLength
-        {
-            get
-            {
+        public virtual int CaretLength {
+            get {
                 if (!_caretLength.HasValue)
                     _caretLength = GetEnd().Index - GetBegin().Index;
 

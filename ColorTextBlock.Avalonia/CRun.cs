@@ -7,36 +7,46 @@ using ColorTextBlock.Avalonia.Geometries;
 using System;
 using System.Collections.Generic;
 
-namespace ColorTextBlock.Avalonia
-{
+namespace ColorTextBlock.Avalonia {
     /// <summary>
     /// Expression of a text
     /// </summary>
-    public class CRun : CInline
-    {
+    public class CRun : CInline {
         /// <summary>
-        /// THe content of the eleemnt
+        /// The content of the element
         /// </summary>
         /// <seealso cref="Content"/>
         public static readonly StyledProperty<string> TextProperty =
             AvaloniaProperty.Register<CRun, string>(nameof(Text));
 
         /// <summary>
-        /// THe content of the eleemnt
+        /// The letter spacing
+        /// </summary>
+        public static readonly StyledProperty<double> LetterSpacingProperty =
+            AvaloniaProperty.Register<CRun, double>(nameof(LetterSpacing));
+
+        /// <summary>
+        /// The content of the element
         /// </summary>
         [Content]
-        public string Text
-        {
+        public string Text {
             get { return GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
         }
 
+        /// <summary>
+        /// The letter spacing
+        /// </summary>
+        [Content]
+        public double LetterSpacing {
+            get { return GetValue(LetterSpacingProperty); }
+            set { SetValue(LetterSpacingProperty, value); }
+        }
+
         protected override IEnumerable<CGeometry> MeasureOverride(
             double entireWidth,
-            double remainWidth)
-        {
-            if (String.IsNullOrEmpty(Text))
-            {
+            double remainWidth) {
+            if (String.IsNullOrEmpty(Text)) {
                 return Array.Empty<CGeometry>();
             }
 
@@ -44,28 +54,22 @@ namespace ColorTextBlock.Avalonia
             var paraProps = CreateTextParagraphProperties(runProps);
             var source = new SimpleTextSource(Text.AsMemory(), runProps);
 
-            if (remainWidth == entireWidth)
-            {
+            if (remainWidth == entireWidth) {
                 return CreateLines(source, entireWidth, paraProps);
             }
 
             var firstLine = TextFormatter.Current.FormatLine(source, 0, double.PositiveInfinity, paraProps);
-            if (firstLine is null)
-            {
+            if (firstLine is null) {
                 return Array.Empty<CGeometry>();
             }
 
-            if (firstLine.Width < remainWidth)
-            {
-                if (firstLine.Length == Text.Length)
-                {
+            if (firstLine.Width < remainWidth) {
+                if (firstLine.Length == Text.Length) {
                     return new List<CGeometry>() { new TextLineGeometry(this, source, firstLine, false) };
                 }
 
                 return CreateLines(source, entireWidth, paraProps, firstLine);
-            }
-            else
-            {
+            } else {
                 var firstLineSource = source.Subsource(firstLine.FirstTextSourceIndex, firstLine.Length);
                 var firstLineRemain = TextFormatter.Current.FormatLine(firstLineSource, 0, remainWidth, paraProps)!;
 
@@ -73,14 +77,11 @@ namespace ColorTextBlock.Avalonia
                 int breakPos = breakPosEnum.MoveNext(out var lnbrk) ? lnbrk.PositionWrap : int.MaxValue;
 
 
-                if (breakPos < firstLineRemain.Length)
-                {
+                if (breakPos < firstLineRemain.Length) {
                     // correct wrap
 
                     return CreateLines(source, entireWidth, paraProps, firstLineRemain);
-                }
-                else
-                {
+                } else {
                     // wrong wrap; first line word is too long
 
                     return CreateLines(source, entireWidth, paraProps, new LineBreakMarkGeometry(this));
@@ -92,13 +93,11 @@ namespace ColorTextBlock.Avalonia
             SimpleTextSource source,
             double entireWidth,
             TextParagraphProperties paraProps,
-            TextLine firstLine)
-        {
+            TextLine firstLine) {
             TextLine prev = firstLine;
 
             var length = firstLine.Length;
-            while (length < Text.Length)
-            {
+            while (length < Text.Length) {
                 var line = TextFormatter.Current.FormatLine(source, length, entireWidth, paraProps, prev.TextLineBreak);
                 if (line is null)
                     break;
@@ -116,8 +115,7 @@ namespace ColorTextBlock.Avalonia
             SimpleTextSource source,
             double entireWidth,
             TextParagraphProperties paraProps,
-            CGeometry? prevGeo = null)
-        {
+            CGeometry? prevGeo = null) {
             if (prevGeo is not null)
                 yield return prevGeo;
 
@@ -126,8 +124,7 @@ namespace ColorTextBlock.Avalonia
                 yield break;
 
             var length = prev.Length;
-            while (length < Text.Length)
-            {
+            while (length < Text.Length) {
                 var line = TextFormatter.Current.FormatLine(source, length, entireWidth, paraProps, prev.TextLineBreak);
                 if (line is null)
                     break;
@@ -152,7 +149,7 @@ namespace ColorTextBlock.Avalonia
                         TextWrapping.Wrap,
                         double.NaN,
                         0,
-                        0);
+                        LetterSpacing);
 
         internal TextRunProperties CreateTextRunProperties(IBrush? foreground)
             => new GenericTextRunProperties(Typeface, FontSize, foregroundBrush: foreground);
@@ -161,21 +158,18 @@ namespace ColorTextBlock.Avalonia
     }
 
 
-    readonly struct SimpleTextSource : ITextSource
-    {
+    readonly struct SimpleTextSource : ITextSource {
         private readonly ReadOnlyMemory<char> _text;
         private readonly TextRunProperties _props;
 
         public TextRunProperties RunProperties => _props;
 
-        public SimpleTextSource(ReadOnlyMemory<char> text, TextRunProperties props)
-        {
+        public SimpleTextSource(ReadOnlyMemory<char> text, TextRunProperties props) {
             _text = text;
             _props = props;
         }
 
-        public TextRun? GetTextRun(int textSourceIndex)
-        {
+        public TextRun? GetTextRun(int textSourceIndex) {
             return new TextCharacters(_text.Slice(textSourceIndex), _props);
         }
 
@@ -188,8 +182,7 @@ namespace ColorTextBlock.Avalonia
         public string Substring(int start)
             => _text.Slice(start).ToString();
 
-        public SimpleTextSource ChangeForeground(IBrush? foreground)
-        {
+        public SimpleTextSource ChangeForeground(IBrush? foreground) {
             var runProps = new GenericTextRunProperties(_props.Typeface, _props.FontRenderingEmSize, foregroundBrush: foreground);
             return new SimpleTextSource(_text, runProps);
         }

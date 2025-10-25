@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Avalonia;
 using Avalonia.Media;
-using Avalonia;
 using ColorTextBlock.Avalonia.Fonts;
+using System.Collections.Generic;
 
-namespace ColorTextBlock.Avalonia
-{
+namespace ColorTextBlock.Avalonia {
     /// <summary>
     /// Monospace decoration
     /// </summary>
-    public class CCode : CSpan
-    {
+    public class CCode : CSpan {
         /// <summary>
         /// Monospace font family used for code display.
         /// </summary>
@@ -25,8 +23,7 @@ namespace ColorTextBlock.Avalonia
             Bind(FontFamilyProperty, obsvr);
         }
 
-        public CCode(IEnumerable<CInline> inlines) : base(inlines)
-        {
+        public CCode(IEnumerable<CInline> inlines) : base(inlines) {
             var obsvr = this.GetBindingObservable(MonospaceFontFamilyProperty);
             Bind(FontFamilyProperty, obsvr);
         }
@@ -34,8 +31,7 @@ namespace ColorTextBlock.Avalonia
         /// <summary>
         /// Monospace font family used for code display.
         /// </summary>
-        public FontFamily MonospaceFontFamily
-        {
+        public FontFamily MonospaceFontFamily {
             get { return GetValue(MonospaceFontFamilyProperty); }
             set { SetValue(MonospaceFontFamilyProperty, value); }
         }
