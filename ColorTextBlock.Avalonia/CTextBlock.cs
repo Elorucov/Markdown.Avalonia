@@ -7,7 +7,6 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Metadata;
-using Avalonia.Utilities;
 using Avalonia.VisualTree;
 using ColorTextBlock.Avalonia.Geometries;
 using System;
@@ -529,7 +528,7 @@ namespace ColorTextBlock.Avalonia {
 
                 indicator.Control.Arrange(new Rect(indicator.Left, indicator.Top, indicator.Width, indicator.Height));
             }
-            if (MathUtilities.AreClose(_constraint.Width, finalSize.Width)) {
+            if (AreClose(_constraint.Width, finalSize.Width)) {
                 return finalSize;
             }
 
@@ -540,7 +539,7 @@ namespace ColorTextBlock.Avalonia {
         }
 
         protected override Size MeasureOverride(Size availableSize) {
-            if (_measured.Width == 0d || !MathUtilities.AreClose(availableSize.Width, _constraint.Width) || _measureRequested) {
+            if (_measured.Width == 0d || !AreClose(availableSize.Width, _constraint.Width) || _measureRequested) {
                 _measureRequested = false;
                 _constraint = availableSize;
                 _measured = UpdateGeometry();
@@ -894,6 +893,35 @@ namespace ColorTextBlock.Avalonia {
                 return buffer.ToString();
             }
         }
+
+        #region Dirty hotfix caused by Avalonia v12
+
+        //
+        // Summary:
+        //     AreClose - Returns whether or not two doubles are "close". That is, whether or
+        //     not they are within epsilon of each other.
+        //
+        // Parameters:
+        //   value1:
+        //     The first double to compare.
+        //
+        //   value2:
+        //     The second double to compare.
+        private static bool AreClose(double value1, double value2) {
+            if (value1 == value2) {
+                return true;
+            }
+
+            double num = (Math.Abs(value1) + Math.Abs(value2) + 10.0) * 2.2204460492503131E-16;
+            double num2 = value1 - value2;
+            if (0.0 - num < num2) {
+                return num > num2;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 
 
